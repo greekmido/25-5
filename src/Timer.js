@@ -1,7 +1,7 @@
-function Timer(){
+function Timer({countdown}){
 return (
     <div>
-        Timer
+        {countdown}
     </div>
 )
 }
