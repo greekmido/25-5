@@ -1,6 +1,7 @@
-function Timer({countdown}){
+function Timer({countdown,label}){
 return (
     <div>
+        <h3>{label}</h3>
         {countdown}
     </div>
 )

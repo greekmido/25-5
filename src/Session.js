@@ -1,10 +1,10 @@
-function Session({stimer,handle}){
+function Session({stimer,handleup,handledown}){
     return(
         <div id="session-label">
             session:
-            <button id="session-increment" onClick={handle}>Up</button>
+            <button id="session-increment" onClick={handleup}>Up</button>
             <div id="session-length">{stimer}</div>
-            <div id="session-decrement">Down</div>
+            <button id="session-decrement" onClick={handledown}>Down</button>
         </div>
     )
 }
