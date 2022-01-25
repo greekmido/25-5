@@ -1,80 +1,53 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import './App.css';
 import Break from './Break';
 import Session from './Session';
-import Timer from './Timer'
+import Timer from './Timer';
+import sessiontimermp3 from './sessiontimer.mp3';
+import breaktimermp3 from './breaktimer.mp3';
 function App() {
   const [breaktimer,setBreaktimer]=useState(5);
   const [sessiontimer,setSessiontimer]=useState(25);
   const [timer,setTimer]=useState("25:00");
-  const [sessionEx,setSessionEx]=useState(null);
-  const [intervalOmeter,setIntervalOmeter]=useState(0);
-  const [isPaused,setIsPaused]=useState(false);
-  const [breakEx,setBreakEx]=useState(false);
-  // const [intervalOmeter2,setIntervalOmeter2]=useState(0);
-  //const [timer2,setTimer2]=useState("05:00");
-  const [isStarted,setIsStarted]=useState(false);
-  // // // const [sessionStarted,setSessionstarted]=useState(false);
-   const [label,setLabel]=useState("Session");
-  // // // const [isBstarted,setIsBstarted]=useState(false)
-  // // // console.log("rerendering");
-  // // if(timer==="00:55"&&intervalOmeter&&!sessionEx){
-  // //   clearInterval(intervalOmeter);
-  // //   //
-  // //   setIntervalOmeter(0);
-  // //   setSessionEx(true);
-  // //   console.log("timer1 is clreard")
-  // // }
-  // // if(timer2==="00:55"&&intervalOmeter2&&isBstarted){
-  // //   setIntervalOmeter2(0);
-  // //   clearInterval(intervalOmeter2);
-  // //   setIsStarted(false);
-  // //   console.log("timer2 cleared");
-  // // }
-  // // if(sessionEx&&!isBstarted){
-  // //   setLabel("Break");
-  // //   const endDate = new Date(new Date().getTime()+breaktimer*60000);
-  // //   const intervalID2 = setInterval(()=>{
-  // //     let diff =new Date(endDate.getTime()-new Date()).getTime()+50;
-  // //     let seconds = Math.floor((diff/1000)%60);
-  // //     let minuts = Math.floor((diff/60000)%60);
-  // //     if (seconds.toString().length<2){
-  // //       seconds="0"+seconds;
-  // //     }
-  // //     if (minuts.toString().length<2){
-  // //       minuts="0"+minuts;
-  // //     }
-  // //     setTimer2(minuts+":"+seconds);
-  // //     console.log("break interval");  
-  // //   },1000);
-  // //   setIntervalOmeter2(intervalID2); 
-  // //   setIsBstarted(true);
-  // // }
-    console.log("rendering with intervalometer= "+intervalOmeter);
-    if (timer==="24:55"&&!sessionEx){
-     console.log("timer is at the end");
-     console.log("im clearing the interval of id no:"+intervalOmeter);
-     const intervalID2 = stopGo(breaktimer);
-     console.log("break interval id is "+intervalID2);
-     setIntervalOmeter(intervalID2);
-     clearInterval(intervalOmeter);
-     setSessionEx(true);
-    }
-
+  const [label,setLabel]=useState("Session");
+  const intervalRef=useRef(0);
+  const isPaused=useRef(true);
+  let stimermp3,btimermp3;
+  stimermp3 = document.createElement("audio");
+  btimermp3 = document.createElement("audio");
+  stimermp3.id="beep";
+  stimermp3.src=sessiontimermp3;
+  btimermp3.id="beep2"
+  btimermp3.src=breaktimermp3;
   
-//  if (sessionEx===true&&!intervalOmeter){
-//    console.log("session is expired and intervalometer not set");
-//   const intervalID2 = stopGo(breaktimer);
-//   setIntervalOmeter(intervalID2);
-//   setSessionEx(false);
-//  }
-
+    if (timer==="24:50"&&label==="Session"){
+      stimermp3.play();
+    }
+      // when session timer expire start break
+    if (timer==="24:40"&&label==="Session"){
+      setTimer("00:00");
+      setLabel("Break");
+      clearInterval(intervalRef.current);
+      const intervalID2 = stopGo(breaktimer);
+      intervalRef.current=intervalID2;
+    }
+    if (timer==="04:50"&&label==="Break"){
+      btimermp3.play();
+    }
+     //when break timer expire start session
+    if (timer==="04:40"&&label==="Break"){
+     clearInterval(intervalRef.current);
+     setLabel("Session");
+     setTimer("00:00");
+     const intervalID2 = stopGo(sessiontimer);
+     intervalRef.current=intervalID2;
+    }
+    // main timer controller 
   function stopGo(time){
-     console.log("im in");
      let timerArr;
      let endDate;
-     //resume timer if it was paused
-     if(isPaused){
+     //resume from where the timer is pused if it was paused 
+     if(isPaused.current){
       timerArr = timer.split(":");
       endDate = new Date(new Date().getTime()+(parseInt(timerArr[0])*60000)+(parseInt(timerArr[1])*1000));
       //start timer based on session timer
@@ -92,70 +65,105 @@ function App() {
          minuts="0"+minuts;
        }
        setTimer(minuts+":"+seconds);
-       console.log("interval id in the loop is "+intervalID);    
      },1000);
-     console.log("returning wit interval id"+intervalID);
      return intervalID;
   }
+
   const handleStart=()=>{
-    // pause if there is interval set
-    if(intervalOmeter){
-         clearInterval(intervalOmeter);
-         setIntervalOmeter(null);
-         setIsPaused(true);
-         setIsStarted(false);
+    console.log(stimermp3.paused);
+    if (!stimermp3.paused){
+      console.log("pausing playing session beep");
+      stimermp3.pause();
+      stimermp3.currentTime=0;
+    }
+    if (!btimermp3.paused){
+      console.log("pausing playing break beep");
+      btimermp3.pause();
+      btimermp3.currentTime=0;
+    }
+    // pause if there is an interval set
+    if(intervalRef.current){
+      console.log("im clearing the sound ");
+         clearInterval(intervalRef.current);
+         intervalRef.current=0;
+         isPaused.current=true;
          return;
    }
-   //start the timer
-    if((!intervalOmeter&&!isStarted&&!isPaused&&!sessionEx)||isPaused){
+   //start the timer for the first time
+    if((label==="Session"&&!intervalRef.current&&isPaused.current)){
     const intervalID = stopGo(sessiontimer);
-    setIntervalOmeter(intervalID);
-    setIsStarted(true); 
+    intervalRef.current=intervalID;
+    isPaused.current=false;
     }
-   }//handlestart END
+    //resume the timer on break
+     if (label==="Break"&&!intervalRef.current&&isPaused.current){
+      const intervalID = stopGo(breaktimer);
+      intervalRef.current=intervalID;
+      isPaused.current=false;
+     }
+   }
 
    const handleReset=()=>{
     setBreaktimer(5);
-    clearInterval(intervalOmeter);
+    clearInterval(intervalRef.current);
     setSessiontimer(25);
-    setIntervalOmeter(null);
+    intervalRef.current=0;
     setTimer("25:00");
-    setIsStarted(false);
+    isPaused.current=true;
+    setLabel("Session");
   }
    const handleSincrement=()=>{
-    if (sessiontimer>=60||isStarted){
+     // dont increment if timer running or exceeded the limit
+    if (sessiontimer>=60||!isPaused.current){
       return;
     }
     setSessiontimer((prev)=>{
-      setTimer((prev+1).toString().length<2?"0"+(prev+1)+":00":(prev+1)+":00");
+      // if increasing the session while the session timer is in display then update the timer in view 
+      if(label==="Session"){
+        setTimer((prev+1).toString().length<2?"0"+(prev+1)+":00":(prev+1)+":00");
+      }
+      //anyway increase session timer
       return prev+1;
     });
-    
    }
    const handleSdecrement=()=>{
-    if (sessiontimer<=1||isStarted){
+     // dont decrease if timer running or less than the limit
+    if (sessiontimer<=1||!isPaused.current){
       return;
     }
     setSessiontimer((prev)=>{
-      setTimer((prev-1).toString().length<2?"0"+(prev-1)+":00":(prev-1)+":00");
+      if(label==="Session"){
+        setTimer((prev-1).toString().length<2?"0"+(prev-1)+":00":(prev-1)+":00");
+      }
       return prev-1;
     });
    }
    const handleBincrement=()=>{
-    if (breaktimer>=60||isStarted){
+     // dont increment if timer running or exceeded the limit
+    if (breaktimer>=60||!isPaused.current){
       return;
     }
     setBreaktimer((prev)=>{
+       // if increasing the break while the break timer is in display then update the timer in view 
+      if(label==="Break"){
       setTimer((prev+1).toString().length<2?"0"+(prev+1)+":00":(prev+1)+":00");
+      }
+      //anyway increase session timer
       return prev+1;
     });
    }
+   
    const handleBdecrement=()=>{
-    if (breaktimer<=1||isStarted){
+     // dont decrease if timer running or less than the limit
+    if (breaktimer<=1||!isPaused.current){
       return;
     }
     setBreaktimer((prev)=>{
-      setTimer((prev-1).toString().length<2?"0"+(prev-1)+":00":(prev-1)+":00");
+      // if decreasing the break while the break timer is in display then update the timer in view
+      if(label==="Break"){
+        setTimer((prev-1).toString().length<2?"0"+(prev-1)+":00":(prev-1)+":00");
+      }
+      // anyway decrease the break timer
       return prev-1;
     });
   }
