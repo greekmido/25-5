@@ -23,7 +23,6 @@ function App() {
   const intervalRef=useRef(0);
   const isPaused=useRef(true);
   const tle = document.getElementById("label");
-  console.log("rendering with timer value : "+timer);
     if (timer==="00:10"&&label==="Session"){
         stimermp3.play();
         tle.setAttribute("class","beat");
@@ -31,7 +30,6 @@ function App() {
       // when session timer expire start break
     if (timer==="-1:-1"&&label==="Session"){
       setTimer("00:00");
-      console.log("session expired"+timer);
       tle.setAttribute("class","")
       setLabel("Break");
       clearInterval(intervalRef.current);
@@ -53,7 +51,6 @@ function App() {
     }
     // main timer controller 
   function stopGo(time){
-    console.log("did you go into the go?")
      let timerArr;
      let endDate;
      //resume from where the timer is pused if it was paused 
