@@ -1,10 +1,10 @@
 function Break({btimer,handleup,handledown}){
     return(
         <div id="break-label">
-         Break:
-         <button id="break-increase" onClick={handleup}>Up</button>
+         <div>Break</div>
+         <button className="icon-btn" id="break-increase" onClick={handleup}>+</button>
          <div id="break-length">{btimer}</div>
-         <button id="break-decrease" onClick={handledown}>Down</button>  
+         <button className="icon-btn" id="break-decrease" onClick={handledown}>-</button>  
         </div>
     )
 }

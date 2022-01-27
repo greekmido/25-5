@@ -1,3 +1,7 @@
+@font-face {
+  font-family: "digitalplay";
+  src: url("digital-7\ \(mono\).ttf");
+}
 .App {
   text-align: center;
 }
@@ -9,7 +13,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    animation: App-logo-spin infinite 20s linear ;
   }
 }
 
@@ -27,12 +31,51 @@
 .App-link {
   color: #61dafb;
 }
+#label{
+  width: 150px;
+  height: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.beat{
+  animation: beat 0.5s linear alternate infinite;
+  width: 150px;
+  height: 40px;
+  margin-left: 0;
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+}
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@keyframes beat {
+  from {color: whitesmoke;}
+  to {color: tomato;
+      font-size: larger}
+}
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #cdcdcd;
+  background: white;
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+  transition: width 0.2s ease-in-out;
+}
+#session-length,#break-length{
+  display: inline-block;
+  width: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+#session-label,#break-label{
+  margin-right: 50px;
+  margin-left: 50px;
+}
+#timer{
+  font-family: digitalplay;
+  font-size: 500%;
+  margin: 0;
 }

@@ -5,6 +5,16 @@ import Session from './Session';
 import Timer from './Timer';
 import sessiontimermp3 from './sessiontimer.mp3';
 import breaktimermp3 from './breaktimer.mp3';
+import playicon from './playpause.svg';
+import reseticon from './reset.svg';
+let stimermp3,btimermp3;
+    stimermp3 = document.createElement("audio");
+    btimermp3 = document.createElement("audio");
+    stimermp3.id="beep";
+    stimermp3.src=sessiontimermp3;
+    btimermp3.id="beep2";
+    btimermp3.src=breaktimermp3;
+
 function App() {
   const [breaktimer,setBreaktimer]=useState(5);
   const [sessiontimer,setSessiontimer]=useState(25);
@@ -12,45 +22,45 @@ function App() {
   const [label,setLabel]=useState("Session");
   const intervalRef=useRef(0);
   const isPaused=useRef(true);
-  let stimermp3,btimermp3;
-  stimermp3 = document.createElement("audio");
-  btimermp3 = document.createElement("audio");
-  stimermp3.id="beep";
-  stimermp3.src=sessiontimermp3;
-  btimermp3.id="beep2"
-  btimermp3.src=breaktimermp3;
-  
-    if (timer==="24:50"&&label==="Session"){
-      stimermp3.play();
+  const tle = document.getElementById("label");
+  console.log("rendering with timer value : "+timer);
+    if (timer==="00:10"&&label==="Session"){
+        stimermp3.play();
+        tle.setAttribute("class","beat");
     }
       // when session timer expire start break
-    if (timer==="24:40"&&label==="Session"){
+    if (timer==="-1:-1"&&label==="Session"){
       setTimer("00:00");
+      console.log("session expired"+timer);
+      tle.setAttribute("class","")
       setLabel("Break");
       clearInterval(intervalRef.current);
       const intervalID2 = stopGo(breaktimer);
       intervalRef.current=intervalID2;
     }
-    if (timer==="04:50"&&label==="Break"){
+    if (timer==="00:10"&&label==="Break"){
+      tle.setAttribute("class","beat");
       btimermp3.play();
     }
      //when break timer expire start session
-    if (timer==="04:40"&&label==="Break"){
-     clearInterval(intervalRef.current);
+    if (timer==="-1:-1"&&label==="Break"){
+      setTimer("00:00");
+     tle.setAttribute("class","")
      setLabel("Session");
-     setTimer("00:00");
+     clearInterval(intervalRef.current);
      const intervalID2 = stopGo(sessiontimer);
      intervalRef.current=intervalID2;
     }
     // main timer controller 
   function stopGo(time){
+    console.log("did you go into the go?")
      let timerArr;
      let endDate;
      //resume from where the timer is pused if it was paused 
      if(isPaused.current){
       timerArr = timer.split(":");
       endDate = new Date(new Date().getTime()+(parseInt(timerArr[0])*60000)+(parseInt(timerArr[1])*1000));
-      //start timer based on session timer
+      //start timer based on time argument
      }else{
      endDate = new Date(new Date().getTime()+time*60000);
      }
@@ -70,20 +80,16 @@ function App() {
   }
 
   const handleStart=()=>{
-    console.log(stimermp3.paused);
     if (!stimermp3.paused){
-      console.log("pausing playing session beep");
       stimermp3.pause();
       stimermp3.currentTime=0;
     }
     if (!btimermp3.paused){
-      console.log("pausing playing break beep");
       btimermp3.pause();
       btimermp3.currentTime=0;
     }
     // pause if there is an interval set
     if(intervalRef.current){
-      console.log("im clearing the sound ");
          clearInterval(intervalRef.current);
          intervalRef.current=0;
          isPaused.current=true;
@@ -152,7 +158,6 @@ function App() {
       return prev+1;
     });
    }
-   
    const handleBdecrement=()=>{
      // dont decrease if timer running or less than the limit
     if (breaktimer<=1||!isPaused.current){
@@ -170,12 +175,16 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-      25+5 Clock
+      <div>25+5 Clock</div>
+      <div style={{display:"flex",flexDirection:"row"}}>
+      <Session stimer={sessiontimer} handleup={handleSincrement} handledown={handleSdecrement} />
       <Break btimer={breaktimer} handledown={handleBdecrement} handleup={handleBincrement}/>
-      <Session stimer={sessiontimer} handleup={handleSincrement} handledown={handleSdecrement}/>
+      </div>
       <Timer countdown={timer} label={label}/>
-      <button id="start_stop" onClick={handleStart}>start/stop</button>
-      <button id="reset" onClick={handleReset}>reset</button>
+      <div style={{display:"inline",marginTop:"20px"}}>
+      <button  id="start_stop" onClick={handleStart}><img width="20px" src={playicon} alt="play and pause icon"></img></button>
+      <button  id="reset" onClick={handleReset}><img width="20px" src={reseticon} alt="reset icon"></img></button>
+      </div>
       </header>
     </div>
   );
