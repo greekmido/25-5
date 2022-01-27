@@ -71,6 +71,7 @@ function App() {
        if (minuts.toString().length<2){
          minuts="0"+minuts;
        }
+       document.title=minuts+":"+seconds;
        setTimer(minuts+":"+seconds);
      },1000);
      return intervalID;
