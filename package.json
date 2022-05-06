@@ -2,7 +2,7 @@
   "name": "25and5",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://greekmido.github.io/25and5/",
+  "homepage": "https://shellparse.github.io/25and5/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
