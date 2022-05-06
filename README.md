@@ -9,7 +9,7 @@
 
 
 
-[![enlight](https://img.shields.io/static/v1?label=25+5Clock&message=Live&color=gray&labelColor=green)](https://greekmido.github.io/25and5/)
+[![enlight](https://img.shields.io/static/v1?label=25+5Clock&message=Live&color=gray&labelColor=green)](https://shellparse.github.io/25and5/)
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
